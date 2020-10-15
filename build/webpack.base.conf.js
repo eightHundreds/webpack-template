@@ -3,10 +3,8 @@
 
 const path = require('path')
 const fs = require('fs')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { VueLoaderPlugin } = require('vue-loader')
 
 // Main const
 const PATHS = {
@@ -39,36 +37,8 @@ module.exports = {
     */
     publicPath: '/'
   },
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          name: 'vendors',
-          test: /node_modules/,
-          chunks: 'all',
-          enforce: true
-        }
-      }
-    }
-  },
   module: {
     rules: [
-      {
-        // JavaScript
-        test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: '/node_modules/'
-      },
-      {
-        // Vue
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loader: {
-            scss: 'vue-style-loader!css-loader!sass-loader'
-          }
-        }
-      },
       {
         // Fonts
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
@@ -86,24 +56,17 @@ module.exports = {
         }
       },
       {
-        // scss
-        test: /\.scss$/,
+        // less
+        test: /\.less$/,
         use: [
           'style-loader',
-          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: { sourceMap: true }
           },
+
           {
-            loader: 'postcss-loader',
-            options: {
-              sourceMap: true,
-              config: { path: `./postcss.config.js` }
-            }
-          },
-          {
-            loader: 'sass-loader',
+            loader: 'less-loader',
             options: { sourceMap: true }
           }
         ]
@@ -113,18 +76,10 @@ module.exports = {
         test: /\.css$/,
         use: [
           'style-loader',
-          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: { sourceMap: true }
           },
-          {
-            loader: 'postcss-loader',
-            options: {
-              sourceMap: true,
-              config: { path: `./postcss.config.js` }
-            }
-          }
         ]
       }
     ]
@@ -133,15 +88,9 @@ module.exports = {
     alias: {
       '~': PATHS.src, // Example: import Dog from "~/assets/img/dog.jpg"
       '@': `${PATHS.src}/js`, // Example: import Sort from "@/utils/sort.js"
-      vue$: 'vue/dist/vue.js'
     }
   },
   plugins: [
-    // Vue loader
-    new VueLoaderPlugin(),
-    new MiniCssExtractPlugin({
-      filename: `${PATHS.assets}css/[name].[contenthash].css`
-    }),
     new CopyWebpackPlugin({
       patterns: [
         // Images:
